@@ -71,6 +71,7 @@
 .import go_basic
 .import go_desktop
 .import cond_init_load_save_vectors
+.import restore_vectors
 
 ; from format
 .import fast_format
@@ -1197,7 +1198,7 @@ L8986:  jsr     _relink
 ; ----------------------------------------------------------------
 OFF:    bne     L89BC
         sei
-        jsr     $FD15
+        jsr     restore_vectors
         jsr     $E453 ; assign $0300 BASIC vectors
         jsr     cond_init_load_save_vectors
         cli
@@ -1208,7 +1209,7 @@ OFF:    bne     L89BC
 ; ----------------------------------------------------------------
 KILL:   bne     L89BC
         sei
-        jsr     $FD15
+        jsr     restore_vectors
         jsr     $E453 ; assign $0300 BASIC vectors
         cli
         lda     #>$E385

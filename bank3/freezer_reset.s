@@ -27,7 +27,7 @@ freezer_goto_monitor:
       ldx  #$FF
       txs
       jsr  IOINIT_direct
-      jsr  RESTOR_direct
+      jsr  restore_vectors
       lda  #$00
       tay
 :     sta  $0002,y                      ; Clear zeropage
@@ -49,6 +49,15 @@ freezer_goto_monitor:
       lda  #<(init_load_and_basic_vectors-1)
       pha
       jmp  _enable_fcbank0
+
+.global restore_vectors
+restore_vectors:
+      ldx  #$1F
+:     lda  $FD30,x
+      sta  $0314,x
+      dex
+      bpl  :-
+      rts
 
 
 .segment "freezer_reset"

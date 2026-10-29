@@ -22,6 +22,7 @@
 .global go_basic
 .global cond_init_load_save_vectors
 .global init_load_save_vectors
+.global restore_vectors
 
 ; Bank 2 (Desktop, Freezer/Print) Symbols
 desktop_entry   := $8000
@@ -47,6 +48,14 @@ L8031:  lda     basic_vectors,x ; overwrite BASIC vectors
         sta     $0302,x
         dex
         bpl     L8031
+        rts
+
+restore_vectors:
+        ldx     #$1F
+:       lda     $FD30,x
+        sta     $0314,x
+        dex
+        bpl     :-
         rts
 
 init_vectors_goto_psettings:
@@ -85,7 +94,7 @@ L805A:  sta     $02,y
         sta     $B2
         lda     #>$033C
         sta     $B3 ; datasette buffer
-        jsr     $FD15 ; init I/O (same as RESTOR)
+        jsr     restore_vectors
         jsr     $FF5B ; video reset (same as CINT)
         jsr     $E453 ; assign $0300 BASIC vectors
         jsr     init_load_and_basic_vectors
@@ -97,10 +106,10 @@ L805A:  sta     $02,y
         beq     L80C4 ; 1988-13 changes this to "bne" to start into BASIC
         cpx     #$DF ; C= pressed?
         beq     go_desktop
-        ; This determines which is default at power-on: Desktop or BASIC
-        and     #$7F     ; Was the VIC-II not initialized at reset??
-        beq     go_desktop ; Boot DESKTOP by default
-        ; If the VIC-II was initalized... check wether the desktop signature
+        ; Boot BASIC by default at power-on.
+        and     #$7F     ; Was the VIC-II not initialized at reset?
+        beq     L80AA
+        ; If the VIC-II was initialized, check whether the desktop signature
         ; is in memory, if yes, boot into desktop.
         ldy     #mg87_signature_end - mg87_signature - 1
 :       lda     $CFFC,y

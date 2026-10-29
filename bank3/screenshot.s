@@ -17,6 +17,7 @@
 .import __screenshotcode_RUN__, __screenshotcode_LOAD__,__screenshotcode_SIZE__
 .import __copycode_LOAD__,__copycode_RUN__,__copycode_SIZE__
 .import __ramload_LOAD__,__ramload_RUN__,__ramload_SIZE__
+.import restore_vectors
 
 
 print_graphmode_val := $30
@@ -1521,7 +1522,7 @@ freezer_screenshot_prepare:
       sta  $0300,y
       iny
       bne  :-
-      jsr  $FD15                        ; Routine RESTOR of KERNAL
+      jsr  restore_vectors
       ldx  #$00
       ldy  #$A0
       jsr  $FE2D                        ; SETTOP inside KERNAL
